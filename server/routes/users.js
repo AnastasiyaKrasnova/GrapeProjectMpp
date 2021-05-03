@@ -26,7 +26,7 @@ router.post('/login', async (req,res)=>{
           res.status(401).send('Email or password is incorrect');
 });
 
-router.post('/list', async (req,res)=>{
+router.get('/list', async (req,res)=>{
      if (req.query.id){
           const saved=await User.filterById(req.query.id);
           if (saved)
@@ -76,40 +76,28 @@ router.put('/update_status', async (req,res)=>{
      }     
      else
          res.status(400).send('DB error while updating date');
- });
+ });*/
 
 router.put('/users/update_role', async (req,res)=>{
 
-     console.log(req.body)
-     const saved=await Task.update(req.body);
+     const saved=await User.update_role(req.query.user_id, req.query.name);
      if (saved){
           res.status(200).send(saved);
      }     
      else
-         res.status(400).send('DB error while updating date');
-});
-
-router.put('/users/update_status', async (req,res)=>{
-
-     console.log(req.body)
-     const saved=await Task.update(req.body);
-     if (saved){
-          res.status(200).send(saved);
-     }     
-     else
-         res.status(400).send('DB error while updating date');
+         res.status(400).send('DB error while updating users role');
 });
 
 router.put('/users/logout', async (req,res)=>{
 
-     console.log(req.body)
+     /*console.log(req.body)
      const saved=await Task.update(req.body);
      if (saved){
           res.status(200).send(saved);
      }     
      else
-         res.status(400).send('DB error while updating date');
-});*/
+         res.status(400).send('DB error while updating date');*/
+});
 
 
 

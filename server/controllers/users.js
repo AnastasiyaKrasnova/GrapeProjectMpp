@@ -108,8 +108,7 @@ exports.update=async(data)=>{
 
 exports.update_status=async(user_id,name)=>{
     try{
-        const prev=await UserStatusM2M.find({user:user_id, deleted:false})
-        prev=await User.findByIdAndUpdate({_id : prev._id}, {deleted: true}, {upsert: false})
+        const prev=await UserStatusM2M.findByIdAndUpdate({user:user_id, deleted:false},{deleted: true}, {upsert: false})
         const statusid=await getStatusId(name);
         const user_status_m2m=new UserStatusM2M({
             status: statusid,
