@@ -71,12 +71,9 @@ function FormDialog(props) {
 FormDialog.propTypes = {
   classes: PropTypes.object.isRequired,
   open: PropTypes.bool.isRequired,
-  onClose: PropTypes.func.isRequired,
   headline: PropTypes.string.isRequired,
   loading: PropTypes.bool.isRequired,
-  onFormSubmit: PropTypes.func.isRequired,
   content: PropTypes.element.isRequired,
-  actions: PropTypes.element.isRequired,
   hideBackdrop: PropTypes.bool.isRequired
 };
 

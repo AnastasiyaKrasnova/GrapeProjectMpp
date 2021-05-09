@@ -1,19 +1,17 @@
 import React, { useState, useCallback, useRef, Fragment } from "react";
 import PropTypes from "prop-types";
 import classNames from "classnames";
-import { withRouter } from "react-router-dom";
+import { withRouter} from "react-router-dom";
 import {
   TextField,
   Button,
-  Checkbox,
-  Typography,
-  FormControlLabel,
   withStyles,
+  InputLabel
 } from "@material-ui/core";
 import FormDialog from "../../../shared/components/FormDialog";
-import HighlightedInformation from "../../../shared/components/HighlightedInformation";
 import ButtonCircularProgress from "../../../shared/components/ButtonCircularProgress";
 import VisibilityPasswordTextField from "../../../shared/components/VisibilityPasswordTextField";
+import axios from 'axios';
 
 const styles = (theme) => ({
   forgotPassword: {
@@ -36,172 +34,95 @@ const styles = (theme) => ({
   },
 });
 
-function LoginDialog(props) {
-  const {
-    setStatus,
-    history,
-    classes,
-    onClose,
-    openChangePasswordDialog,
-    status,
-  } = props;
-  const [isLoading, setIsLoading] = useState(false);
-  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const loginEmail = useRef();
-  const loginPassword = useRef();
-
-  const login = useCallback(() => {
-    setIsLoading(true);
-    setStatus(null);
-    if (loginEmail.current.value !== "test@web.com") {
-      setTimeout(() => {
-        setStatus("invalidEmail");
-        setIsLoading(false);
-      }, 1500);
-    } else if (loginPassword.current.value !== "HaRzwc") {
-      setTimeout(() => {
-        setStatus("invalidPassword");
-        setIsLoading(false);
-      }, 1500);
-    } else {
-      setTimeout(() => {
-        history.push("/c/dashboard");
-      }, 150);
+class LoginDialog extends React.Component{
+  constructor(props){
+      super(props)
+      this.state={
+        email:"",
+        password:"",
+        error:"",
+        isLoading: false,
+        isVisible: false
+      }
+      this.doLogin=this.doLogin.bind(this);
+  }
+  
+  async doLogin(){
+    let user={
+      email: this.state.email,
+      password: this.state.password
     }
-  }, [setIsLoading, loginEmail, loginPassword, history, setStatus]);
-
-  return (
-    <Fragment>
+    axios.post(`http://localhost:3002/users/login`,user)
+    .then((res)=>{
+        document.cookie = `auth-token=${res.data}; max-age=3600`;
+        setTimeout(() => {
+          this.props.history.push("/c/dashboard");
+        }, 150);
+      })
+    .catch((err)=>{
+        console.log(err)
+        this.setState({error: "Почта или пароль не верны"})
+      })   
+  }
+  render(){
+    return (
+      <Fragment>
       <FormDialog
-        open
-        onClose={onClose}
-        loading={isLoading}
-        onFormSubmit={(e) => {
-          e.preventDefault();
-          login();
-        }}
+        open={this.props.open}
+        onClose={this.props.onClose}
+        loading={false}
         hideBackdrop
-        headline="Login"
+        headline="Вход"
         content={
           <Fragment>
             <TextField
               variant="outlined"
               margin="normal"
-              error={status === "invalidEmail"}
-              required
               fullWidth
-              label="Email Address"
-              inputRef={loginEmail}
+              value={this.state.catalog_num}
+              onChange={e => this.setState({ email: e.target.value })}
+              label="Email"
               autoFocus
               autoComplete="off"
-              type="email"
-              onChange={() => {
-                if (status === "invalidEmail") {
-                  setStatus(null);
-                }
-              }}
-              helperText={
-                status === "invalidEmail" &&
-                "This email address isn't associated with an account."
-              }
-              FormHelperTextProps={{ error: true }}
             />
-            <VisibilityPasswordTextField
+             <VisibilityPasswordTextField
               variant="outlined"
               margin="normal"
-              required
               fullWidth
-              error={status === "invalidPassword"}
-              label="Password"
-              inputRef={loginPassword}
+              label="Пароль"
               autoComplete="off"
-              onChange={() => {
-                if (status === "invalidPassword") {
-                  setStatus(null);
-                }
+              onChange={e => this.setState({ password: e.target.value })}
+              onVisibilityChange={()=>{
+                if (this.state.isVisible)
+                  this.setState({isVisible:false})
+                else this.setState({isVisible:true})
               }}
-              helperText={
-                status === "invalidPassword" ? (
-                  <span>
-                    Incorrect password. Try again, or click on{" "}
-                    <b>&quot;Forgot Password?&quot;</b> to reset it.
-                  </span>
-                ) : (
-                  ""
-                )
-              }
-              FormHelperTextProps={{ error: true }}
-              onVisibilityChange={setIsPasswordVisible}
-              isVisible={isPasswordVisible}
+              isVisible={this.state.isVisible}
             />
-            <FormControlLabel
-              className={classes.formControlLabel}
-              control={<Checkbox color="primary" />}
-              label={<Typography variant="body1">Remember me</Typography>}
-            />
-            {status === "verificationEmailSend" ? (
-              <HighlightedInformation>
-                We have send instructions on how to reset your password to your
-                email address
-              </HighlightedInformation>
-            ) : (
-              <HighlightedInformation>
-                Email is: <b>test@web.com</b>
-                <br />
-                Password is: <b>HaRzwc</b>
-              </HighlightedInformation>
-            )}
-          </Fragment>
-        }
-        actions={
-          <Fragment>
+            <InputLabel id="errorLabel">{this.state.error}</InputLabel>
             <Button
-              type="submit"
               fullWidth
-              variant="contained"
               color="secondary"
-              disabled={isLoading}
+              disabled={this.state.isLoading}
+              onClick={this.doLogin}
               size="large"
             >
-              Login
-              {isLoading && <ButtonCircularProgress />}
+              Войти
+              {this.state.isLoading && <ButtonCircularProgress />}
             </Button>
-            <Typography
-              align="center"
-              className={classNames(
-                classes.forgotPassword,
-                isLoading ? classes.disabledText : null
-              )}
-              color="primary"
-              onClick={isLoading ? null : openChangePasswordDialog}
-              tabIndex={0}
-              role="button"
-              onKeyDown={(event) => {
-                // For screenreaders listen to space and enter events
-                if (
-                  (!isLoading && event.keyCode === 13) ||
-                  event.keyCode === 32
-                ) {
-                  openChangePasswordDialog();
-                }
-              }}
-            >
-              Forgot Password?
-            </Typography>
+            <Fragment> 
           </Fragment>
+        </Fragment>
         }
       />
     </Fragment>
-  );
+    )
+  }  
 }
 
 LoginDialog.propTypes = {
   classes: PropTypes.object.isRequired,
-  onClose: PropTypes.func.isRequired,
-  setStatus: PropTypes.func.isRequired,
-  openChangePasswordDialog: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired,
-  status: PropTypes.string,
 };
 
 export default withRouter(withStyles(styles)(LoginDialog));

@@ -46,6 +46,7 @@ exports.listAllForCatalog=async()=>{
 }
 
 exports.filter=async(data)=>{
+    console.log(data.catalog_num)
     try{
         const sounds=await setFilters(data.catalog_num,data.name,data.extension,data.duration_to,data.duration_from,data.price_to,data.price_from,data.author_id,data.category_id);
         return sounds;
@@ -58,7 +59,7 @@ exports.filter=async(data)=>{
 
 exports.filterById=async(id)=>{
     try{
-        const sounds=await Sound.findOne({_id: id});
+        const sounds=await Sound.find({_id: id});
         return sounds;
 
     }catch(err){
@@ -68,7 +69,7 @@ exports.filterById=async(id)=>{
 
 exports.filterByCatalogNum=async(catalog_num)=>{
     try{
-        const sounds=await Sound.findOne({catalog_num: catalog_num});
+        const sounds=await Sound.find({catalog_num: catalog_num, deleted:false});
         return sounds;
 
     }catch(err){
@@ -78,7 +79,7 @@ exports.filterByCatalogNum=async(catalog_num)=>{
 
 exports.filterByAuthor=async(author_id)=>{
     try{
-        const entitys=await Sound.find({author_id: author_id})
+        const entitys=await Sound.find({author_id: author_id, deleted:false})
         return entitys;
 
     }catch(err){
@@ -87,8 +88,10 @@ exports.filterByAuthor=async(author_id)=>{
 }
 
 exports.filterByCategory=async(category_id)=>{
+    console.log(category_id)
     try{
-        const entitys=await Sound.find({category_id: category_id})
+        const entitys=await Sound.find({category_id: category_id, deleted:false})
+        console.log(entitys)
         return entitys;
 
     }catch(err){
@@ -98,7 +101,7 @@ exports.filterByCategory=async(category_id)=>{
 
 exports.filterByName=async(name)=>{
     try{
-        const entitys=await Sound.find({ "name": { "$regex": name, "$options": "i" }})
+        const entitys=await Sound.find({ name: { "$regex": name, "$options": "i" }, deleted:false})
         return entitys;
 
     }catch(err){
@@ -127,8 +130,10 @@ exports.delete=async(id)=>{
 }
 
 async function filterByDuration(from,to){
+    if (!from) from=0
+    if (!to) to=Number.MAX_VALUE
     try{
-        const entitys=await Sound.find({ "duration": { "$gte": from, "$lte": to}})
+        const entitys=await Sound.find({ duration: { "$gte": from, "$lte": to}, deleted:false})
         return entitys;
 
     }catch(err){
@@ -137,8 +142,10 @@ async function filterByDuration(from,to){
 }
 
 async function filterByPrice(from,to){
+    if (!from) from=0
+    if (!to) to=Number.MAX_VALUE
     try{
-        const entitys=await Sound.find({ "price": { "$gte": from, "$lte": to}})
+        const entitys=await Sound.find({ price: { "$gte": from, "$lte": to}, deleted:false})
         return entitys;
 
     }catch(err){
@@ -148,7 +155,7 @@ async function filterByPrice(from,to){
 
 async function filterByExtension(ext){
     try{
-        const entitys=await Sound.find({extention: ext})
+        const entitys=await Sound.find({extention: ext, deleted:false})
         return entitys;
 
     }catch(err){
@@ -156,12 +163,24 @@ async function filterByExtension(ext){
     }
 }
 
+async function NonFilterable(catalog_num,name,extension,duration_to,duration_from,price_to,price_from,author_id,category_id){
+    if (!catalog_num && !name && !extension && !duration_to && !duration_from && !price_to && !price_from && !author_id && !category_id){
+        res=await _this.listAllForCatalog()
+        return res
+    }
+    return null;
+}
+
 async function setFilters(catalog_num,name,extension,duration_to,duration_from,price_to,price_from,author_id,category_id){
+    var full=await NonFilterable(catalog_num,name,extension,duration_to,duration_from,price_to,price_from,author_id,category_id)
+    if (full)
+        return full
     let filter_count=0
     let filter1=[]
     if (catalog_num){
         filter1=await _this.filterByCatalogNum(catalog_num)
         filter_count+=1
+        console.log("Catalog_num", filter1)
     }
     let filter2=[]
     if (name){
@@ -193,7 +212,7 @@ async function setFilters(catalog_num,name,extension,duration_to,duration_from,p
         filter7=await filterByExtension(extension)
         filter_count+=1
     }
-    const full_res=filter1.concat(filter2,filter3,filter4,filter5,filter6,filter7)
+    const full_res=[].concat(filter1,filter2,filter3,filter4,filter5,filter6,filter7)
     let result = [];
     full_res.forEach(function(elem) {
         if(Repeats(full_res,result,elem,filter_count)) {

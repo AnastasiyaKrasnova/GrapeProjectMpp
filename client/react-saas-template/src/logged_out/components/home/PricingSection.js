@@ -1,5 +1,4 @@
 import React from "react";
-import PropTypes from "prop-types";
 import classNames from "classnames";
 import {
   Grid,
@@ -45,108 +44,69 @@ const styles = theme => ({
   }
 });
 
-function PricingSection(props) {
-  const { width, classes } = props;
+class PricingSection extends React.Component{
+
+  constructor(props){
+    super(props)
+
+    this.handleonBuyClicked=this.handleonBuyClicked.bind(this);
+    this.handleonDemoDownloadClicked=this.handleonDemoDownloadClicked.bind(this);
+  }
+
+  async handleonBuyClicked(key){
+    console.log(key)
+  }
+
+  async handleonDemoDownloadClicked(url){
+    const link = document.createElement('a');
+    link.href = url;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+ render(){
   return (
     <div className="lg-p-top" style={{ backgroundColor: "#FFFFFF" }}>
       <Typography variant="h3" align="center" className="lg-mg-bottom">
-        Pricing
+        Файлы
       </Typography>
-      <div className={classNames("container-fluid", classes.containerFix)}>
+      <div className={classNames("container-fluid", this.props.classes.containerFix)}>
         <Grid
           container
-          spacing={calculateSpacing(width)}
-          className={classes.gridContainer}
+          spacing={calculateSpacing(this.props.width)}
+          className={this.props.classes.gridContainer}
         >
+          {this.props.cards.map(element => (
           <Grid
             item
-            xs={12}
-            sm={6}
-            lg={3}
-            className={classes.cardWrapper}
-            data-aos="zoom-in-up"
-          >
-            <PriceCard
-              title="Starter"
-              pricing={
-                <span>
-                  $14.99
-                  <Typography display="inline"> / month</Typography>
-                </span>
-              }
-              features={["Feature 1", "Feature 2", "Feature 3"]}
-            />
-          </Grid>
-          <Grid
-            item
-            className={classes.cardWrapperHighlighted}
+            className={this.props.classes.cardWrapper}
             xs={12}
             sm={6}
             lg={3}
             data-aos="zoom-in-up"
-            data-aos-delay="200"
+            data-aos-delay={isWidthUp("md", this.props.width) ? "300" : "100"}
+            key={element._id}
           >
             <PriceCard
-              highlighted
-              title="Premium"
-              pricing={
-                <span>
-                  $29.99
-                  <Typography display="inline"> / month</Typography>
-                </span>
-              }
-              features={["Feature 1", "Feature 2", "Feature 3"]}
+              title={element.name}
+              pricing={element.price+" "+element.currency_code}
+              imageurl={element.image_url}
+              catalognum={element.catalog_num}
+              duration={element.duration}
+              extension={element.extention}
+              buy={this.handleonBuyClicked.bind(this,element._id)}
+              download={this.handleonDemoDownloadClicked.bind(this,element.demo_url)}
             />
           </Grid>
-          <Grid
-            item
-            className={classes.cardWrapper}
-            xs={12}
-            sm={6}
-            lg={3}
-            data-aos="zoom-in-up"
-            data-aos-delay={isWidthUp("md", width) ? "400" : "0"}
-          >
-            <PriceCard
-              title="Business"
-              pricing={
-                <span>
-                  $49.99
-                  <Typography display="inline"> / month</Typography>
-                </span>
-              }
-              features={["Feature 1", "Feature 2", "Feature 3"]}
-            />
-          </Grid>
-          <Grid
-            item
-            className={classes.cardWrapper}
-            xs={12}
-            sm={6}
-            lg={3}
-            data-aos="zoom-in-up"
-            data-aos-delay={isWidthUp("md", width) ? "600" : "200"}
-          >
-            <PriceCard
-              title="Tycoon"
-              pricing={
-                <span>
-                  $99.99
-                  <Typography display="inline"> / month</Typography>
-                </span>
-              }
-              features={["Feature 1", "Feature 2", "Feature 3"]}
-            />
-          </Grid>
+          ))}
         </Grid>
       </div>
     </div>
   );
+ }
+  
 }
-
-PricingSection.propTypes = {
-  width: PropTypes.string.isRequired
-};
 
 export default withStyles(styles, { withTheme: true })(
   withWidth()(PricingSection)

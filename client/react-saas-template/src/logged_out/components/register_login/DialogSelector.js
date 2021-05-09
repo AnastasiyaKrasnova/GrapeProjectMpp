@@ -37,15 +37,15 @@ function DialogSelector(props) {
         );
       case "termsOfService":
         return <TermsOfServiceDialog onClose={openRegisterDialog} />;
-      case "login":
-        return (
-          <LoginDialog
-            onClose={_onClose}
-            status={loginStatus}
-            setStatus={setLoginStatus}
-            openChangePasswordDialog={openChangePasswordDialog}
-          />
-        );
+        case "login":
+          return (
+            <LoginDialog
+              onClose={_onClose}
+              status={loginStatus}
+              setStatus={setLoginStatus}
+              openChangePasswordDialog={openChangePasswordDialog}
+            />
+          );
       case "changePassword":
         return (
           <ChangePasswordDialog

@@ -8,9 +8,8 @@ const schema=new mongoose.Schema({
     },
     parent_category_id:{
         type: mongoose.Schema.Types.ObjectId,
-        required: true,
         ref: "Category"
     },
 });
 
-module.exports=mongoose.model('User_Status',schema);
+module.exports=mongoose.model('Category',schema);

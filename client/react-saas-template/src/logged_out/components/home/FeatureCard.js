@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React, { Fragment} from "react";
 import PropTypes from "prop-types";
 import { Typography, withStyles } from "@material-ui/core";
 
@@ -36,30 +36,37 @@ function shadeColor(hex, percent) {
     .slice(1)}`;
 }
 
-function FeatureCard(props) {
-  const { classes, Icon, color, headline, text } = props;
-  return (
-    <Fragment>
-      <div
-        // We will set color and fill here, due to some prios complications
-        className={classes.iconWrapper}
-        style={{
-          color: color,
-          backgroundColor: shadeColor(color, 0.5),
-          fill: color
-        }}
-      >
-        {Icon}
-      </div>
-      <Typography variant="h5" paragraph>
-        {headline}
-      </Typography>
-      <Typography variant="body1" color="textSecondary">
-        {text}
-      </Typography>
-    </Fragment>
-  );
+
+class FeatureCard extends React.Component{
+  
+  render(){
+    return (
+      <div onClick={this.props.onClick} style={{
+        backgroundColor: shadeColor(this.props.color, 0.5),
+      }}>
+        <Fragment>
+        <div
+          className={this.props.classes.iconWrapper}
+          style={{
+            color: this.props.color,
+            backgroundColor: shadeColor(this.props.color, 0.5),
+            fill: this.props.color
+          }}
+        >
+          {this.props.Icon}
+        </div>
+        <Typography variant="h5" paragraph>
+          {this.props.headline}
+        </Typography>
+        <Typography variant="body1" color="textSecondary">
+          {this.props.text}
+        </Typography>
+      </Fragment>
+      </div>  
+    );
+  }
 }
+  
 
 FeatureCard.propTypes = {
   classes: PropTypes.object.isRequired,

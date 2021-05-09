@@ -16,6 +16,7 @@ router.post('/create', async (req,res)=>{
 });
 
 router.post('/filter', async (req,res)=>{
+     console.log(req.body)
      const saved=await Sound.filter(req.body);
     if (saved)
          res.status(200).send(saved);
@@ -59,13 +60,26 @@ router.delete('/blob_delete',async (req,res)=>{
 
 router.post('/download', async(req, res) => {
      const saved=await Sound.filterById(req.query.id);
-     https.get(saved.full_url, function(file) {
-         file.pipe(res)
-     })
-     .on('error', function(err) { 
-         console.log(err);
-         res.status(404).send({ msg: "File not found" })
-     });
+     const dir=`${global.appRoot}/public/${saved.name+"."+saved.extention}`
+     fs.open(dir, 'w',function (err, file) {
+          if (err) throw err;
+          console.log('Saved!');
+        })
+     try{
+          let full_file= await BlobServiceClient.download_file(saved.author_id, saved.name,saved.extention,"fullfiles",dir);
+          if (full_file!=null){
+               res.download(dir, (err) => {
+                    if (err){
+                         console.log(err);
+                         return res.status(404).send({ msg: "file is not found" })
+                    }})
+          }    
+          else
+               res.status(404).send({ msg: "error while downloading file" })  
+      }
+      catch{
+          res.status(404).send({ msg: "error while downloading file" })
+      }
 });
 
 router.get('/catalog',async (req,res)=>{

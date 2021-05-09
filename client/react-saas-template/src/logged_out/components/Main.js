@@ -47,6 +47,7 @@ function Main(props) {
     setIsMobileDrawerOpen(false);
   }, [setDialogOpen, setIsMobileDrawerOpen]);
 
+
   const closeDialog = useCallback(() => {
     setDialogOpen(null);
   }, [setDialogOpen]);
@@ -117,15 +118,6 @@ function Main(props) {
       <CookieRulesDialog
         open={isCookieRulesDialogOpen}
         onClose={handleCookieRulesDialogClose}
-      />
-      <NavBar
-        selectedTab={selectedTab}
-        selectTab={setSelectedTab}
-        openLoginDialog={openLoginDialog}
-        openRegisterDialog={openRegisterDialog}
-        mobileDrawerOpen={isMobileDrawerOpen}
-        handleMobileDrawerOpen={handleMobileDrawerOpen}
-        handleMobileDrawerClose={handleMobileDrawerClose}
       />
       <Routing
         blogPosts={blogPosts}

@@ -6,13 +6,15 @@ const mongoose=require('mongoose');
 const path = require('path');
 const cookies = require("cookie-parser");
 var fileupload = require("express-fileupload");
-const {serverPort} =require('../api_config.json');
+const {serverPort} =require('./api_config.json');
 
 
 global.appRoot = path.resolve(__dirname);
 
 const sounds=require('./routes/sounds');
 const users=require('./routes/users');
+const categorys=require('./routes/categorys');
+const purchases=require('./routes/purchases');
 
 dotenv.config();
 
@@ -30,6 +32,8 @@ app.use(cookies());
 
 app.use('/sounds',sounds);
 app.use('/users',users);
+app.use('/categorys',categorys);
+app.use('/purchases',purchases);
 
 
 

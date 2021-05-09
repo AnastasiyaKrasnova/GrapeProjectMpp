@@ -1,7 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Typography, Box, withStyles } from "@material-ui/core";
-import CheckIcon from "@material-ui/icons/Check";
+import { Button, Typography, Box, withStyles } from "@material-ui/core";
 
 const styles = theme => ({
   card: {
@@ -31,44 +30,60 @@ const styles = theme => ({
 });
 
 function PriceCard(props) {
-  const { classes, theme, title, pricing, features, highlighted } = props;
+  const { classes,title,imageurl,catalognum,duration,extension, pricing,highlighted, download, buy } = props;
   return (
     <div className={highlighted ? classes.cardHightlighted : classes.card}>
-      <Box mb={2}>
-        <Typography
-          variant={highlighted ? "h5" : "h6"}
+       <Box mb={2}>
+       <Typography
+          variant={highlighted ? "h3" : "h4"}
           className={highlighted ? "text-white" : classes.title}
         >
           {title}
         </Typography>
-      </Box>
-      <Box mb={2}>
-        <Typography
-          variant={highlighted ? "h3" : "h4"}
+        <img 
+        src={imageurl}
+        width="200" height="100"
+        alt="new"
+        />
+         <Typography
+          variant={highlighted ? "h5" : "h6"}
           className={highlighted ? "text-white" : null}
         >
-          {pricing}
+          {"Catalog num: "+catalognum}
         </Typography>
-      </Box>
-      {features.map((feature, index) => (
-        <Box display="flex" alignItems="center" mb={1} key={index}>
-          <CheckIcon
-            style={{
-              color: highlighted
-                ? theme.palette.common.white
-                : theme.palette.primary.dark
-            }}
-          />
-          <Box ml={1}>
-            <Typography
-              className={highlighted ? "text-white" : null}
-              variant={highlighted ? "h6" : "body1"}
+        <Typography
+          variant={highlighted ? "h5" : "h6"}
+          className={highlighted ? "text-white" : null}
+        >
+          {"Price: "+pricing}
+        </Typography>
+        <Typography
+          variant={highlighted ? "h5" : "h6"}
+          className={highlighted ? "text-white" : null}
+        >
+          {"File size: "+duration} MB
+        </Typography>
+        <Typography
+          variant={highlighted ? "h5" : "h6"}
+          className={highlighted ? "text-white" : null}
+        >
+          {"Extention: "+extension} MB
+        </Typography>
+        <Button
+              onClick={download}
+              variant="contained"
+              color="secondary"
             >
-              {feature}
-            </Typography>
-          </Box>
-        </Box>
-      ))}
+             Download Demo
+        </Button>
+        <Button
+              onClick={buy}
+              variant="contained"
+              color="secondary"
+            >
+              Buy Full
+        </Button>
+      </Box>
     </div>
   );
 }

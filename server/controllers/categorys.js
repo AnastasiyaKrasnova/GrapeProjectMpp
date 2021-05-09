@@ -2,7 +2,7 @@ const Category=require('../model/Category');
 const _this=this
 
 exports.add=async (data)=>{
-    const cat=new category({
+    const cat=new Category({
         name: data.name,
         parent_category_id: data.parent_id,
     });

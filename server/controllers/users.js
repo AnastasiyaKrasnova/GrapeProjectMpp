@@ -42,7 +42,7 @@ exports.login=async (data)=>{
         const emailUser=await isUserExists(data.email);
         if (!emailUser)
             return null
-        const validPass=await bcrypt.compare(data.password, emailUser.password)
+        const validPass=await bcrypt.compare(data.password, emailUser.password_hash)
         if (!validPass)
             return null
         return emailUser

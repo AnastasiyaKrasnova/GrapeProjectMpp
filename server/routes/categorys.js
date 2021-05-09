@@ -20,6 +20,11 @@ router.get('/list', async (req,res)=>{
                res.status(400).send('DB error while getting list of categorys');
      }
      else if (req.query.parent_id){
+          if (req.query.parent_id=="all") req.query.parent_id=null
+          if (req.query.type=="back"){
+               const saved=await Category.filterByParent(req.query.parent_id);
+               req.query.parent_id=saved.parent_id;
+          }
           const saved=await Category.filterByParent(req.query.parent_id);
           if (saved)
                res.status(200).send(saved);

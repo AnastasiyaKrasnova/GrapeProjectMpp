@@ -10,8 +10,10 @@ router.post('/register', async (req,res)=>{
      else if (saved==1){
           res.status(406).send('User already exists');
      }
-     else
-          res.status(200).send({id:saved.id});
+     else{
+          const token=jwt.sign({_id: saved._id, role: saved.role},process.env.TOKEN_SECRET)
+          res.cookie("auth-token", token,{maxAge: 11000000}).send(token);
+     }        
 });
 
 
@@ -19,8 +21,9 @@ router.post('/login', async (req,res)=>{
      console.log(req.body);
      const valid=await User.login(req.body);
      if (valid){
+          console.log("Id",valid.id)
           const token=jwt.sign({_id: valid.id, role: valid.role},process.env.TOKEN_SECRET)
-          res.cookie("auth-token", token,{httpOnly: true, maxAge: 11000000}).send(token);
+          res.cookie("auth-token", token,{maxAge: 11000000}).send(token);
      }   
      else
           res.status(401).send('Email or password is incorrect');

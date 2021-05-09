@@ -14,8 +14,9 @@ import MenuIcon from "@material-ui/icons/Menu";
 import HomeIcon from "@material-ui/icons/Home";
 import HowToRegIcon from "@material-ui/icons/HowToReg";
 import LockOpenIcon from "@material-ui/icons/LockOpen";
-import BookIcon from "@material-ui/icons/Book";
-import NavigationDrawer from "../../../shared/components/NavigationDrawer";
+import LoginDialog from "../register_login/LoginDialog";
+import RegisterDialog from "../register_login/RegisterDialog";
+import FilterDialog from "../register_login/FilterDialog";
 
 const styles = theme => ({
   appBar: {
@@ -44,30 +45,36 @@ function NavBar(props) {
     classes,
     openRegisterDialog,
     openLoginDialog,
+    openFilterDialog,
+    registerOpen,
+    loginOpen,
+    filterOpen,
+    registerClose,
+    loginClose,
+    filterClose,
+    doFiltering,
     handleMobileDrawerOpen,
-    handleMobileDrawerClose,
-    mobileDrawerOpen,
-    selectedTab
+    handleMobileDrawerClose
   } = props;
   const menuItems = [
     {
       link: "/",
-      name: "Home",
+      name: "Домой",
       icon: <HomeIcon className="text-white" />
     },
     {
-      link: "/blog",
-      name: "Blog",
-      icon: <BookIcon className="text-white" />
-    },
-    {
-      name: "Register",
+      name: "Регистрация",
       onClick: openRegisterDialog,
       icon: <HowToRegIcon className="text-white" />
     },
     {
-      name: "Login",
+      name: "Вход",
       onClick: openLoginDialog,
+      icon: <LockOpenIcon className="text-white" />
+    },
+    {
+      name: "Фильтры",
+      onClick: openFilterDialog,
       icon: <LockOpenIcon className="text-white" />
     }
   ];
@@ -82,7 +89,7 @@ function NavBar(props) {
               display="inline"
               color="primary"
             >
-              Wa
+              Microstok
             </Typography>
             <Typography
               variant="h4"
@@ -90,9 +97,22 @@ function NavBar(props) {
               display="inline"
               color="secondary"
             >
-              Ver
+              Sosatb
             </Typography>
           </div>
+          <LoginDialog
+             open={loginOpen}
+             onClose={loginClose}
+          />
+          <RegisterDialog
+             open={registerOpen}
+             onClose={registerClose}
+          />
+           <FilterDialog
+            open={filterOpen}
+            doFilter={doFiltering}
+            onClose={filterClose}
+          />
           <div>
             <Hidden mdUp>
               <IconButton
@@ -139,13 +159,6 @@ function NavBar(props) {
           </div>
         </Toolbar>
       </AppBar>
-      <NavigationDrawer
-        menuItems={menuItems}
-        anchor="right"
-        open={mobileDrawerOpen}
-        selectedItem={selectedTab}
-        onClose={handleMobileDrawerClose}
-      />
     </div>
   );
 }
@@ -157,7 +170,7 @@ NavBar.propTypes = {
   mobileDrawerOpen: PropTypes.bool,
   selectedTab: PropTypes.string,
   openRegisterDialog: PropTypes.func.isRequired,
-  openLoginDialog: PropTypes.func.isRequired
+  openLoginDialog: PropTypes.func.isRequired,
 };
 
 export default withStyles(styles, { withTheme: true })(memo(NavBar));
